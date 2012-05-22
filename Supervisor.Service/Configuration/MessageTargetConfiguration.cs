@@ -14,6 +14,8 @@ namespace Supervisor.Configuration
 
     internal class MessageTargetConfiguration
     {
+        private Type type;
+
         public Guid Id { get; set; }
 
         public string DisplayName { get; set; }
@@ -22,7 +24,19 @@ namespace Supervisor.Configuration
         {
             get
             {
-                return typeof(NLog.Targets.MessageBoxTarget);
+                return this.type;
+            }
+
+            set
+            {
+                if (typeof(NLog.Targets.Target).IsAssignableFrom(value))
+                {
+                    this.type = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must descend from NLog.Targets.Target");
+                }
             }
         }
 

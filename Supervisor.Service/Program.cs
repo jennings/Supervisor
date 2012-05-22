@@ -34,7 +34,8 @@ namespace Supervisor
                 var asyncTargetWrapper = new AsyncTargetWrapper()
                 {
                     Name = target.Id.ToString(),
-                    WrappedTarget = new MessageBoxTarget()
+                    WrappedTarget = target.Type.GetConstructor(new Type[] { }).Invoke(null) as Target,
+                    BatchSize = 1
                 };
                 logConfig.AddTarget(target.Id.ToString(), asyncTargetWrapper);
             }
