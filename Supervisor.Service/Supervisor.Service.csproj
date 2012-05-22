@@ -66,6 +66,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\IConfiguration.cs" />
+    <Compile Include="Configuration\MessageTargetConfiguration.cs" />
+    <Compile Include="Configuration\MonitorConfiguration.cs" />
+    <Compile Include="Configuration\ListBackedConfiguration.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,7 +102,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <Import Project="$(MSBuildProjectDirectory)\..\packages\StyleCop\Microsoft.StyleCop.Targets" />

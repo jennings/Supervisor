@@ -27,7 +27,7 @@ namespace Supervisor
 
         public MainForm()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.FormClosed += new FormClosedEventHandler(this.StopScheduler);
 
