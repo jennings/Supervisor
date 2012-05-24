@@ -8,6 +8,7 @@ namespace Supervisor
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Windows.Forms;
     using NLog;
@@ -25,7 +26,20 @@ namespace Supervisor
         {
             log.Debug("Starting");
 
-            IConfiguration config = new ListBackedConfiguration();
+            IConfiguration config;
+            string filename = @"C:\Temp\Config.js";
+            if (File.Exists(filename))
+            {
+                config = new JsonBackedConfiguration();
+                var configText = File.ReadAllText(filename);
+                ((JsonBackedConfiguration)config).LoadFromString(configText);
+            }
+            else
+            {
+                config = new JsonBackedConfiguration();
+                var configString = ((JsonBackedConfiguration)config).ToPersistableString();
+                File.WriteAllText(filename, configString);
+            }
 
             var logConfig = new LoggingConfiguration();
 

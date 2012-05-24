@@ -29,14 +29,12 @@ namespace Supervisor.Configuration
 
             set
             {
-                if (typeof(NLog.Targets.Target).IsAssignableFrom(value))
-                {
-                    this.type = value;
-                }
-                else
+                if (!typeof(NLog.Targets.Target).IsAssignableFrom(value))
                 {
                     throw new ArgumentException("Value must descend from NLog.Targets.Target");
                 }
+
+                this.type = value;
             }
         }
 
