@@ -7,15 +7,8 @@
 namespace Supervisor
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Data;
-    using System.Drawing;
-    using System.Linq;
-    using System.Text;
     using System.Windows.Forms;
     using Quartz;
-    using Quartz.Impl;
 
     /// <summary>
     ///     The form which owns the scheduler. Should be replaced
@@ -25,32 +18,13 @@ namespace Supervisor
     {
         private IScheduler scheduler;
 
-        public MainForm()
+        public MainForm(IScheduler scheduler)
         {
             this.InitializeComponent();
 
-            this.FormClosed += new FormClosedEventHandler(this.StopScheduler);
-
-            var schedulerFactory = new StdSchedulerFactory();
-            this.scheduler = schedulerFactory.GetScheduler();
+            this.scheduler = scheduler;
+            this.FormClosed += (sender, e) => { this.scheduler.Shutdown(); };
             this.scheduler.Start();
-
-            var jobDetail = JobBuilder.Create<Monitoring.AlwaysErrorMonitor>()
-                                      .WithIdentity("AlwaysErrorMonitor")
-                                      .Build();
-
-            var trigger = TriggerBuilder.Create()
-                                        .WithIdentity("Trigger")
-                                        .StartNow()
-                                        .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).RepeatForever())
-                                        .Build();
-
-            this.scheduler.ScheduleJob(jobDetail, trigger);
-        }
-
-        private void StopScheduler(object sender, EventArgs e)
-        {
-            this.scheduler.Shutdown();
         }
     }
 }

@@ -59,6 +59,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -79,6 +80,9 @@
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainServiceBase.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Monitoring\AlwaysErrorMonitor.cs" />
     <Compile Include="Program.cs" />

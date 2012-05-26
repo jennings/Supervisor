@@ -7,22 +7,23 @@
 namespace Supervisor
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Windows.Forms;
     using NLog;
     using NLog.Config;
     using NLog.Targets;
     using NLog.Targets.Wrappers;
+    using Quartz;
+    using Quartz.Impl;
     using Supervisor.Configuration;
+    using System.ServiceProcess;
 
     internal static class Program
     {
         private static Logger log = LogManager.GetCurrentClassLogger();
 
         [STAThread]
-        public static void Main()
+        public static void Main(string[] args)
         {
             log.Debug("Starting");
 
@@ -72,9 +73,33 @@ namespace Supervisor
 
             log.Debug("Finished building config");
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            var schedulerFactory = new StdSchedulerFactory();
+            var scheduler = schedulerFactory.GetScheduler();
+
+            var jobDetail = JobBuilder.Create<Monitoring.AlwaysErrorMonitor>()
+                                      .WithIdentity("AlwaysErrorMonitor")
+                                      .Build();
+
+            var trigger = TriggerBuilder.Create()
+                                        .WithIdentity("Trigger")
+                                        .StartNow()
+                                        .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).RepeatForever())
+                                        .Build();
+
+            scheduler.ScheduleJob(jobDetail, trigger);
+
+            log.Debug("Finished building scheduler");
+
+            if (args.Length == 0)
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainForm(scheduler));
+            }
+            else
+            {
+                ServiceBase.Run(new MainServiceBase(scheduler));
+            }
         }
     }
 }
