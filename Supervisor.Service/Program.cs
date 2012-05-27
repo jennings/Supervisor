@@ -8,6 +8,7 @@ namespace Supervisor
 {
     using System;
     using System.IO;
+    using System.ServiceProcess;
     using System.Windows.Forms;
     using NLog;
     using NLog.Config;
@@ -16,7 +17,6 @@ namespace Supervisor
     using Quartz;
     using Quartz.Impl;
     using Supervisor.Configuration;
-    using System.ServiceProcess;
 
     internal static class Program
     {
@@ -43,51 +43,19 @@ namespace Supervisor
             }
 
             var logConfig = new LoggingConfiguration();
-
-            foreach (var target in config.MessageTargets)
+            var targetFactory = new ConfigurationBasedNLogTargetFactory(config.MessageTargets);
+            foreach (var target in targetFactory.GetTargets())
             {
-                var asyncTargetWrapper = new AsyncTargetWrapper()
-                {
-                    Name = target.Id.ToString(),
-                    WrappedTarget = target.Type.GetConstructor(new Type[] { }).Invoke(null) as Target,
-                    BatchSize = 1
-                };
-                logConfig.AddTarget(target.Id.ToString(), asyncTargetWrapper);
-            }
-
-            foreach (var monitor in config.Monitors)
-            {
-                foreach (var target in logConfig.ConfiguredNamedTargets)
-                {
-                    if (target.GetType() != typeof(AsyncTargetWrapper))
-                    {
-                        continue;
-                    }
-
-                    var rule = new LoggingRule("*", LogLevel.Debug, target);
-                    logConfig.LoggingRules.Add(rule);
-                }
+                logConfig.AddTarget(target.Name, target);
+                var rule = new LoggingRule("*", LogLevel.Debug, target);
+                logConfig.LoggingRules.Add(rule);
             }
 
             LogManager.Configuration = logConfig;
-
             log.Debug("Finished building config");
 
-            var schedulerFactory = new StdSchedulerFactory();
+            var schedulerFactory = new ConfigurationBasedQuartzSchedulerFactory(config.Monitors);
             var scheduler = schedulerFactory.GetScheduler();
-
-            var jobDetail = JobBuilder.Create<Monitoring.AlwaysErrorMonitor>()
-                                      .WithIdentity("AlwaysErrorMonitor")
-                                      .Build();
-
-            var trigger = TriggerBuilder.Create()
-                                        .WithIdentity("Trigger")
-                                        .StartNow()
-                                        .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).RepeatForever())
-                                        .Build();
-
-            scheduler.ScheduleJob(jobDetail, trigger);
-
             log.Debug("Finished building scheduler");
 
             if (args.Length == 0)

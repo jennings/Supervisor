@@ -32,7 +32,7 @@ namespace Supervisor.Configuration
                 this.targets.Add(new MessageTargetConfiguration { Id = Guid.NewGuid(), DisplayName = "TestTarget3", Type = typeof(NLog.Targets.ConsoleTarget) });
 
                 this.monitors = new List<MonitorConfiguration>();
-                this.monitors.Add(new MonitorConfiguration { Id = Guid.NewGuid(), DisplayName = "TestMonitor1" });
+                this.monitors.Add(new MonitorConfiguration { Id = Guid.NewGuid(), DisplayName = "TestMonitor1", CheckInterval = 6, Type = typeof(Monitoring.AlwaysErrorMonitor) });
             }
             else
             {

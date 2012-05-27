@@ -13,8 +13,30 @@ namespace Supervisor.Configuration
 
     internal class MonitorConfiguration
     {
+        private Type type;
+
         public Guid Id { get; set; }
 
         public string DisplayName { get; set; }
+
+        public Type @Type
+        {
+            get
+            {
+                return this.type;
+            }
+
+            set
+            {
+                if (!typeof(Quartz.IJob).IsAssignableFrom(value))
+                {
+                    throw new ArgumentException("Value must descend from Quartz.IJob");
+                }
+
+                this.type = value;
+            }
+        }
+
+        public uint CheckInterval { get; set; }
     }
 }
