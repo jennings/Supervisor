@@ -87,6 +87,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Monitoring\AlwaysErrorMonitor.cs" />
+    <Compile Include="Monitoring\MonitorBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">

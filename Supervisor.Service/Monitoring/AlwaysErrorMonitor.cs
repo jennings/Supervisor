@@ -10,17 +10,12 @@ namespace Supervisor.Monitoring
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using NLog;
-    using Quartz;
 
-    [DisallowConcurrentExecution]
-    internal class AlwaysErrorMonitor : IJob
+    internal class AlwaysErrorMonitor : MonitorBase
     {
-        private static Logger log = LogManager.GetCurrentClassLogger();
-
-        public void Execute(IJobExecutionContext context)
+        public override void Execute()
         {
-            log.Error("I had an error at {0}", DateTime.Now);
+            this.CriticalAlert("I had an error at {0}", DateTime.Now);
         }
     }
 }

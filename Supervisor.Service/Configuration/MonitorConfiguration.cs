@@ -28,9 +28,9 @@ namespace Supervisor.Configuration
 
             set
             {
-                if (!typeof(Quartz.IJob).IsAssignableFrom(value))
+                if (!typeof(Monitoring.MonitorBase).IsAssignableFrom(value))
                 {
-                    throw new ArgumentException("Value must descend from Quartz.IJob");
+                    throw new ArgumentException("Value must descend from Monitoring.MonitorBase");
                 }
 
                 this.type = value;
